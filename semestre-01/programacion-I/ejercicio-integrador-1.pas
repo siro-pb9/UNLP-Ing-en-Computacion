@@ -1,90 +1,117 @@
-{Realizar un programa que lea 10 nombres de mascotas desde teclado. Cada nombre se ingresa
-carácter a carácter y finaliza con un punto ('.'). Al finalizar la lectura de todos los nombres, se debe
-informar:
-a. Cuántos nombres eran válidos (un nombre es válido si está compuesto únicamente por letras
-y posee al menos 3 caracteres).
-b. Cuántos nombres válidos poseían al menos dos letras iguales consecutivas (ej. "Bobby",
-"Peppa", distinguiendo mayúsculas de minúsculas).
-c. La longitud (cantidad de caracteres) del nombre válido más largo ingresado.
-Requerimientos de implementación:
-• Realizar los módulos necesarios para procesar cada nombre.
-• El ingreso de cada nombre finaliza al procesar el carácter punto ('.').
-• Un nombre es válido solo si contiene letras (A..Z, a..z) y su longitud es mayor o igual a 3.
-• Debe distinguir entre mayúsculas y minúsculas para evaluar las letras consecutivas (Ll es
-inválido).}
+{En el torneo clasificatorio “Pixel Cup” se registran los resultados de 20 jugadores que compitieron en
+una partida. Se desea realizar un análisis estadístico de los resultados obtenidos.
+Realizar un programa que lea los datos de los 20 jugadores. Para cada jugador se ingresan, en este
+orden:
+• El puntaje obtenido en la partida (número entero entre 0 y 1000).
+• El código de jugador: un número entero de exactamente 4 cifras (entre 1000 y 9999).
+• El nickname del jugador, ingresado carácter a carácter y finalizado con un punto ('.'),
+compuesto únicamente por letras minúsculas y números.
+Al finalizar la lectura de los 20 jugadores, se debe informar:
+a. El primero y segundo puntaje máximo obtenido en el torneo.
+b. Para el código del jugador que obtuvo el puntaje máximo, la suma de sus cifras y cuántas de
+esas cifras son impares.
+c. La cantidad de nicknames que son válidos. Un nickname es válido si contiene solamente
+letras minúsculas, y números.}
 
-program ejercicioIntegrador1;
+program Integrador1CiroViola;
+
 const
-  FIN = 10;
+  FIN = '.';
+  jugadores = 20;
 
-var
-  i, maslargo, validos, letrascon, cant: integer;
-  nombre: char;
-  palabravalida, letrasconsecutivas: boolean;
+type
+  puntaje = 0..1000;
+  codigo = 1000..9999;
 
-procedure ProcesarNombre(var c: char; var cantletras: integer; var valido: boolean; var letrasiguales: boolean);
-const
-  MIN = 3;
-var
-  antcar: char;
-
+function esCaracterVal(c: char): boolean;
 begin
-  cantletras := 0;
+  esCaracterVal := ((c >= 'a') and (c <= 'z')) or ((c >= '0') and (c <= '9'));
+end;
+
+procedure procesarNick(var valido: boolean);
+var
+  c: char;
+  cant: integer;
+begin
   valido := true;
-  letrasiguales := false;
-  antcar := ' '; 
-  while (c <> '.') do begin
-
-    if ((c >= 'A') and (c <= 'Z')) or ((c >= 'a') and (c <= 'z')) then
-    begin
-      cantletras := cantletras + 1; // contar letras
-      if antcar = c then
-        letrasiguales := true;  
-    end
-
-    else
-      valido := false; // si el caracter leido no es una letra, no es valido
-  antcar := c; // esto para ver si tiene letras iguales consecutivas
+  cant := 0;
   read(c);
+  while (c <> FIN) do
+  begin
+    cant := cant + 1;
+    if not esCaracterVal(c) then 
+      valido := false;
+    read(c);
   end;
-
-  if cantletras < MIN then // ver si tiene mas de 3 caracteres
+  readln;
+  if (cant = 0) then
     valido := false;
 end;
 
-// inicio del programa
+procedure leerJugador(var p: puntaje; var c: codigo; var nickValido: boolean; i: integer);
 begin
-  maslargo := 0;
-  validos := 0;
-  letrascon := 0;
-  for i := 1 to FIN do // como se sabe la cantidad maxima de nombres, se usa for
-  begin
-  cant := 0;
-  writeln('Ingrese el nombre de la mascota ', i, ':');
-  read(nombre);
-  palabravalida := true;
-  letrasconsecutivas := false;
-  ProcesarNombre(nombre, cant, palabravalida, letrasconsecutivas);
-  readln; // para limpiar el enter que se presiona al ingresar cada nombre
+  writeln('Introduzca puntaje del jugador ', i);
+  readln(p);
+  writeln('Introduzca codigo del jugador ', i);
+  readln(c);
+  writeln('Introduzca nick del jugador ', i);
+  procesarNick(nickValido);
+end;
 
-// area de procesamiento de cada nombre
-  if palabravalida then // sumar contador de nombres validos
-    begin
-      validos := validos + 1;
-      if letrasconsecutivas then // sumar contador de nombres con letras iguales consecutivas
-      letrascon := letrascon + 1;
-      if cant > maslargo then // si el nombre actual es mas largo que el que ya habia, entonces se suplanta por el nuevo
-      maslargo := cant;
-    end;
+procedure actualizarMaximos(p: puntaje; c: codigo; var max1, max2, maxCod: integer);
+begin
+  if (p > max1) then
+  begin
+    max2 := max1;
+    max1 := p;
+    maxCod := c; // codigo a procesar
+  end
+  else if (p > max2) then
+    max2 := p;
+end;
+
+procedure procesarCodigo(c: integer; var impares, suma: integer);
+var
+  act: integer;
+begin
+  impares := 0;
+  suma := 0;
+  while (c <> 0) do
+  begin
+    act := c mod 10;
+    if (act mod 2 <> 0) then
+      impares := impares + 1;
+    suma := suma + act;
+    c := c div 10; // fin
+  end;
+end;
+
+var
+  p: puntaje;
+  c: codigo;
+  max1, max2, maxCod, cantValidos, i, sumaCifras, cantImpares: integer;
+  nickValido: boolean;
+
+begin
+  max1 := -1;
+  max2 := -1;
+  maxCod := -1;
+  cantValidos := 0;
+
+  for i := 1 to jugadores do
+  begin
+    leerJugador(p, c, nickValido, i);
+    actualizarMaximos(p, c, max1, max2, maxCod);
+    if nickValido then
+      cantValidos := cantValidos + 1;
   end;
 
-  writeln;
-  writeln('==== RESULTADOS ====');
-  writeln('Cantidad de nombres validos: ', validos);
-  writeln('Cantidad de nombres validos con al menos dos letras iguales consecutivas: ', letrascon);
-  writeln('Longitud del nombre valido mas largo ingresado: ', maslargo);
-  writeln('Catalogo huellitas felices - UNLP facultad de Informatica - 2026');
-  writeln;
-  writeln('Presione Enter para finalizar...');
-  readln;
+  writeln('maximo 1: ', max1);
+  writeln('maximo 2: ', max2);
+
+  procesarCodigo(maxCod, cantImpares, sumaCifras); // 73
+  writeln('Suma de cifras: ', sumaCifras);
+  writeln('Cantidad de cifras impares: ', cantImpares);
+
+  writeln('Cantidad de nicks validos: ', cantValidos);
 end.
