@@ -1,83 +1,74 @@
-{Se requiere analizar un fragmento de código fuente que contiene FIN caracteres.
-Realizar un programa que lea de teclado y cargue un vector los caracteres por teclado.
-Finalizada la carga informar:
+{3. * Se requiere analizar un fragmento de código fuente que contiene 1024 caracteres. 
+Realizar un programa que lea de teclado y cargue un vector los caracteres por teclado. 
+Finalizada la carga informar: 
 a) La cantidad y porcentaje de consonantes sobre el total de caracteres alfabéticos.
-b) La cantidad y porcentaje de caracteres que son: dígitos, letras mayúsculas y letras minúsculas sobre
+b) La cantidad y porcentaje de caracteres que son: dígitos, letras mayúsculas y letras minúsculas sobre 
 el total de caracteres ingresados.}
 
 program modulo6practica3;
 
 const
-  FIN = 1024;
-  VOCALES = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
+  DimF = 1024;
 
 type
-  caracter = array[1..FIN] of char;
+  secuencia = array [1..DimF] of char;
+  letras = set of char;
 
-procedure leerCaracter(var c: caracter); 
-var
-  i: integer;
-begin
-  for i := 1 to FIN do begin
-    writeln('Introduzca un caracter: ');
-    readln(c[i]); // Leer el final del codigo, hay una explicacion sobre esta linea.
-  end;
-end;
-
-procedure procesarConsonantes(var c: caracter);
-var
-  i, sumaCon, sumaTot: integer;
-begin
-  sumaCon := 0;
-  sumaTot := 0;
-  for i := 1 to FIN do begin
-    if (c[i] in ['a'..'z', 'A'..'Z']) then begin
-      sumaTot := sumaTot + 1;
-      if not (c[i] in VOCALES) then
-        sumaCon := sumaCon + 1;
+procedure leer(var s: secuencia);
+  var
+    i: integer;
+  begin
+    writeln('Ingrese secuencia de 1024 caracteres');
+    for i := 1 to DimF do begin
+      read(s[i]);
     end;
   end;
-  writeln('La cantidad de consonantes es ', sumaCon);
-  if (sumaTot > 0) then
-    writeln('El porcentaje de consonantes es ', (sumaCon * 100) / sumaTot:0:2, '%');
+
+procedure incisos(const s: secuencia; conso: letras);
+  var
+    sumacon, sumaletras, sumamay, sumamin, sumanum, i: integer;
+
+  begin
+    sumacon := 0;
+    sumaletras := 0;
+    sumamay := 0;
+    sumamin := 0;
+    sumanum := 0;
+
+    for i := 1 to DimF do begin    
+      if (s[i] in ['A'..'Z']) then
+      begin
+        sumamay := sumamay + 1;
+        if (s[i] in conso) then
+          sumacon := sumacon + 1;
+      end
+      else if (s[i] in ['a'..'z']) then
+      begin
+        sumamin := sumamin + 1;
+        if (s[i] in conso) then
+          sumacon := sumacon + 1;
+      end
+      else if (s[i] in ['0'..'9']) then
+        sumanum := sumanum + 1;
+    end;
+
+  sumaletras := sumamay + sumamin;
+  if (sumaletras > 0) then
+    writeln(sumacon * 100 / sumaletras:0:2); writeln(sumacon);
+  writeln();
+  writeln(sumamay * 100 / DimF:0:2); writeln(sumamay);
+  writeln();
+  writeln(sumamin * 100 / DimF:0:2); writeln(sumamin);
+  writeln();
+  writeln(sumanum * 100 / DimF:0:2); writeln(sumanum);
+  writeln();
 end;
 
-procedure procesarIncisoB(const c: caracter); { se usa const cuando solo vas a leer el vector }
 var
-  i, digitos, mayus, minus: integer;
+  s: secuencia;
+  l: letras;
 begin
-  digitos := 0;
-  mayus := 0;
-  minus := 0;
-  
-  for i := 1 to FIN do begin
-    if (c[i] in ['0'..'9']) then 
-      digitos := digitos + 1
-    else if (c[i] in ['A'..'Z']) then 
-      mayus := mayus + 1
-    else if (c[i] in ['a'..'z']) then 
-      minus := minus + 1;
-  end;
-  
-  writeln('Cantidad de digitos: ', digitos);
-  writeln('Porcentaje de digitos: ', (digitos * 100) / FIN:0:2, '%');
-  
-  writeln('Cantidad de letras mayusculas: ', mayus);
-  writeln('Porcentaje de letras mayusculas: ', (mayus * 100) / FIN:0:2, '%');
-  
-  writeln('Cantidad de letras minusculas: ', minus);
-  writeln('Porcentaje de letras minusculas: ', (minus * 100) / FIN:0:2, '%');
-end;
-
-var
-  c: caracter;
-begin
-  leerCaracter(c);
-  procesarConsonantes(c);
-  procesarIncisoB(c);
+  leer(s);
+  l := ['a'..'z', 'A'..'Z'] - ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
+  incisos(s, l);
 end.
-
-{en la lina 23 se usa un "readln" en lugar de "read", esto porque readln
- guarda el buffer ( el enter al igresar un caracter) en memoria y eso se considera
- basura en la memoria. en cambio el readln lee el caracter que necesitas y
- descarta todo lo demas. de esa forma el buffer queda vacio para la siguiente iteracion}

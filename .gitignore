@@ -5,3 +5,5 @@
 *.compiled
 *.or
 *.rsj
+.vscode/
+

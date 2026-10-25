@@ -1,117 +1,245 @@
-{En esta etapa, el centro requiere almacenar los datos de las mascotas en una estructura de datos
-para su posterior procesamiento. Se guardarán únicamente aquellas que cumplan con los requisitos
-de validación.
-Se deben leer de teclado los datos de las mascotas e ir almacenándolas en una estructura adecuada
-(máximo 200 registros) hasta que se ingrese una con edad -1 o se alcance el cupo máximo. Para
-cada registro se solicita:
-- Nombre de la mascota (20 caracteres máximo).
-- Edad (Entero).
-- Especie (Código: 1 = Perro, 2 = Gato, 3 = Ave, 4 = Conejo, 5 = Reptil).
-- Ciudad de origen (String).
-Solo se deben almacenar aquellos registros cuyo nombre sea válido (según la lógica desarrollada
-en la Etapa 1). La lectura del nombre finaliza al encontrar el carácter '.' o al leer 20 caracteres.
-Una vez finalizada la carga de todas las mascotas, procesar la estructura de datos almacenada
-para calcular e informar:
-a) La cantidad de mascotas registradas por cada Especie (1 a 5).
-b) El promedio de edad de las mascotas por cada Especie.
-Requerimientos de implementación:
-● Utilizar un Vector de Registros para el almacenamiento.
-● Reutilizar la lógica de validación de nombres de la Parte I.
-● Realizar el procesamiento de los resultados recorriendo la estructura una vez cargada.}
+{El torneo “Pixel Cup” llegó a la fase de grupos. Participan 8 equipos, y cada uno jugó 5 rondas durante esta
+fase. Además, cada equipo tiene un capitán, y a lo largo del torneo se fueron registrando los jugadores
+expulsados por conducta antideportiva.
+Se dispone de una estructura que almacena para los 8 equipos el puntaje obtenido en cada una de las 5 rondas.
+1 - Leer la siguiente información:
+• Almacenar para cada uno de los 8 equipos: el nickname de su capitán. El nickname se ingresa
+carácter a carácter y finaliza con un punto ('.'). Tiene como máximo 20 caracteres.
+• Generar una lista de jugadores expulsados, que contenga el nombre del jugador expulsado y el número
+de equipo (1 a 8) al que pertenecía. La carga de la lista finaliza cuando se ingresa la palabra “FIN”
+como nombre del jugador expulsado. Esta lista debe quedar ordenada por número de equipos.
+2 - Una vez finalizada la carga. Calcular e informar:
+a. Para cada equipo: el puntaje total obtenido sumando sus 5 rondas, y el número de la ronda en la que
+logró su mayor puntaje.
+b. La cantidad de capitanes cuyo nickname es válido. Un nickname es válido si contiene solamente letras
+minúsculas y números (mismo criterio que en la Etapa 1).
+c. El número del equipo con mayor puntaje total del torneo, y el nombre del primer jugador expulsado
+(aprovechar el orden de la listas) que haya pertenecido a ese equipo. Si ningún expulsado perteneció a
+ese equipo, informar que no hay expulsados de ese equipo.}
 
-program ejercicioIntegrador3;
+program ViolaCiroEtapa3;
+
+const
+  CANT_EQ = 8;
+  CANT_RONDAS = 5;
+  MAX_NICK = 20;
+  FIN_CHAR = '.';
+  CORTE_EXP = 'FIN';
 
 type
-    maxlongitud = string[30]; 
-    rangoespecie = 1..5;
-    conjuntoEspecies = set of rangoespecie;
+  rangoEq = 1..CANT_EQ;
+  rangoRonda = 1..CANT_RONDAS;
+  str = string[20];
 
-    FichaMascota = record
-        nombre: maxlongitud;
-        edad: integer;
-        especie: rangoespecie;
-        ciudad: maxlongitud;
-    end;
+  matPunt = array[rangoEq, rangoRonda] of integer;
 
-    VectorMascotas = array[1..200] of FichaMascota; // Vector de registros
+  vecChar = array[1..MAX_NICK] of char;
+  tNick = record
+    v: vecChar;
+    dl: integer;
+  end;
+  vecCap = array[rangoEq] of tNick;
 
-procedure LeerMascota(var m: FichaMascota);
+  expulsado = record
+    nom: str;
+    eq: rangoEq;
+  end;
+
+  lista = ^nodo;
+  nodo = record
+    dato: expulsado;
+    sig: lista;
+  end;
+
+procedure cargarMat(var m: matPunt);
+var
+  e: rangoEq;
+  r: rangoRonda;
 begin
-    write('Ingrese la edad (-1 para salir): ');
-    readln(m.edad);
-
-    if (m.edad <> -1) then
-    begin
-        write('Ingrese el nombre: ');
-        readln(m.nombre);
-        write('Ingrese la especie: ');
-        readln(m.especie);
-        write('Ingrese la ciudad: ');
-        readln(m.ciudad);
-    end;
+  for e := 1 to CANT_EQ do
+    for r := 1 to CANT_RONDAS do
+      m[e, r] := (e * 10) + r * 5;
 end;
 
-procedure CargarMascotas(var v: VectorMascotas; var cant: integer);
+procedure leerNick(var n: tNick);
 var
-    i: integer;
+  c: char;
 begin
+  n.dl := 0;
+  read(c);
+  while (c <> FIN_CHAR) do // punto pq fin es por EXP
+  begin
+    if (n.dl < MAX_NICK) then
+    begin
+      n.dl := n.dl + 1;
+      n.v[n.dl] := c;
+    end;
+    read(c);
+  end;
+  readln;
+end;
+
+procedure leerCapitanes(var caps: vecCap);
+var
+  i: rangoEq;
+begin
+  for i := 1 to CANT_EQ do
+    leerNick(caps[i]);
+end;
+
+function esCarVal(c: char): boolean;
+begin
+  esCarVal := ((c >= 'a') and (c <= 'z')) or ((c >= '0') and (c <= '9'));
+end;
+
+function validarNick(const n: tNick): boolean;
+var
+  i: integer;
+  ok: boolean;
+begin
+  if (n.dl = 0) then
+    validarNick := false
+  else
+  begin
     i := 1;
-    LeerMascota(v[i]); // Carga la primera mascota
-
-    while (v[i].edad <> -1) and (i < 200) do // mientras eddad distinto a -1
+    ok := true;
+    while (i <= n.dl) and ok do
     begin
-        i := i + 1;
-        LeerMascota(v[i]); // Carga la siguiente mascota
+      if not esCarVal(n.v[i]) then
+        ok := false;
+      i := i + 1;
     end;
-
-    cant := i - 1;
+    validarNick := ok;
+  end;
 end;
 
-procedure ProcesarMascotas(const v: VectorMascotas; cant: integer);
+function contarCapsVal(const caps: vecCap): integer;
 var
-    i: integer;
-    cantPorEspecie: array[1..5] of integer; // contar la cantidad de mascotas por especie
-    sumaEdadPorEspecie: array[1..5] of integer; // sumar la edad de las mascotas por especie
+  i: rangoEq;
+  cant: integer;
 begin
-    for i := 1 to 5 do
-    begin
-        cantPorEspecie[i] := 0;
-        sumaEdadPorEspecie[i] := 0;
-    end;
+  cant := 0;
+  for i := 1 to CANT_EQ do
+    if validarNick(caps[i]) then
+      cant := cant + 1;
+  contarCapsVal := cant;
+end;
 
-    for i := 1 to cant do
-    begin
-        cantPorEspecie[v[i].especie] := cantPorEspecie[v[i].especie] + 1; // sumar la cantidad de mascotas por especie
-        sumaEdadPorEspecie[v[i].especie] := sumaEdadPorEspecie[v[i].especie] + v[i].edad; // suma la edad de las mascotas por especie
-    end;
+procedure insertarOrdenado(var l: lista; e: expulsado);
+var
+  nue, ant, act: lista;
+begin
+  new(nue);
+  nue^.dato := e;
+  ant := nil;
+  act := l;
+  while (act <> nil) and (act^.dato.eq <= e.eq) do // ordenar por equipo
+  begin
+    ant := act;
+    act := act^.sig;
+  end;
+  if (ant = nil) then
+  begin
+    nue^.sig := l;
+    l := nue;
+  end
+  else
+  begin
+    ant^.sig := nue;
+    nue^.sig := act;
+  end;
+end;
 
-    writeln;
-    writeln('RESULTADOS DEL PROCESAMIENTO:');
-    writeln;
+procedure leerExpulsado(var e: expulsado);
+begin
+  readln(e.nom);
+  if (e.nom <> CORTE_EXP) then // este es FIN
+    readln(e.eq);
+end;
 
-    for i := 1 to 5 do
+procedure cargarExpulsados(var l: lista);
+var
+  e: expulsado;
+begin
+  l := nil;
+  leerExpulsado(e);
+  while (e.nom <> CORTE_EXP) do 
+  begin
+    insertarOrdenado(l, e);
+    leerExpulsado(e);
+  end;
+end;
+
+procedure procFilaEq(const m: matPunt; eq: rangoEq; var totPunt: integer; var maxRonda: rangoRonda);
+var
+  r: rangoRonda;
+  maxPunt: integer;
+begin
+  totPunt := 0;
+  maxPunt := -1;
+  maxRonda := 1;
+  for r := 1 to CANT_RONDAS do
+  begin
+    totPunt := totPunt + m[eq, r];
+    if (m[eq, r] > maxPunt) then
     begin
-        write('Especie ', i, ': ');
-        if (cantPorEspecie[i] > 0) then
-        begin
-            writeln('Cantidad: ', cantPorEspecie[i], ' - Promedio de edad: ', 
-                    (sumaEdadPorEspecie[i] / cantPorEspecie[i]):0:2); // promedio de edad
-        end
-        else
-        begin
-            writeln('No se registraron mascotas de esta especie.');
-        end;
+      maxPunt := m[eq, r];
+      maxRonda := r;
     end;
+  end;
+end;
+
+function buscarPrimerExp(l: lista; eqBuscado: rangoEq; var nom: str): boolean;
+var
+  act: lista;
+begin
+  act := l;
+  while (act <> nil) and (act^.dato.eq < eqBuscado) do
+    act := act^.sig;
+  if (act <> nil) and (act^.dato.eq = eqBuscado) then
+  begin
+    nom := act^.dato.nom;
+    buscarPrimerExp := true;
+  end
+  else
+    buscarPrimerExp := false;
 end;
 
 var
-    mascotas: VectorMascotas;
-    cantidad: integer;
+  mat: matPunt;
+  caps: vecCap;
+  lExp: lista;
+  i, maxEqTorneo: rangoEq;
+  totPuntEq, maxPuntTorneo: integer;
+  maxRondaEq: rangoRonda;
+  nomPrimerExp: str;
 
 begin
-    CargarMascotas(mascotas, cantidad);
-    ProcesarMascotas(mascotas, cantidad);
+  cargarMat(mat);
+  leerCapitanes(caps);
+  cargarExpulsados(lExp);
 
-    readln;
-    readln;
+  maxPuntTorneo := -1;
+  maxEqTorneo := 1;
+
+  for i := 1 to CANT_EQ do
+  begin
+    procFilaEq(mat, i, totPuntEq, maxRondaEq);
+    writeln('Eq ', i, ': ', totPuntEq, ' R', maxRondaEq);
+    if (totPuntEq > maxPuntTorneo) then
+    begin
+      maxPuntTorneo := totPuntEq;
+      maxEqTorneo := i;
+    end;
+  end;
+
+  writeln('Caps val: ', contarCapsVal(caps));
+
+  writeln('Eq max: ', maxEqTorneo);
+  if buscarPrimerExp(lExp, maxEqTorneo, nomPrimerExp) then
+    writeln('Exp: ', nomPrimerExp)
+  else
+    writeln('Sin exp');
+
+  readln;
 end.
