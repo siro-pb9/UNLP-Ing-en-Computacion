@@ -65,7 +65,7 @@ var
   n: str;
 begin
   readln(n);
-  incisoA(f, n);
-  incisoB(f, n);
+  writeln(incisoA(f, n));
+  writeln(incisoB(f, n));
   readln;
 end.
