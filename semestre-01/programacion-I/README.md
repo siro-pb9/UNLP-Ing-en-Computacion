@@ -20,14 +20,18 @@ Aquí guardo todas las resoluciones de las prácticas, agrupadas por módulos. T
 
 A continuación tienes un mapa interactivo de todo el material resuelto en esta materia:
 
-| Módulo | Enfoque Principal | Ejercicios Destacados |
+| Módulo / Práctica | Enfoque Principal | Contenidos Teóricos y Prácticos |
 | :--- | :--- | :--- |
-| **Módulo 1** | Fundamentos de Pascal, Variables y Estructuras de Control (`if`, `for`, `while`) | [Práctica 6](./modulo1-practica6.pas) • [Práctica 9](./modulo1-practica9.pas) • [Práctica 10](./modulo1-practica10.pas) |
-| **Módulo 2** | Subprogramas: Procedimientos (`procedure`) y Funciones (`function`) | [Práctica 5](./modulo2-practica5.pas) • [Práctica 7](./modulo2-practica7.pas) • [Práctica 8](./modulo2-practica8.pas) |
-| **Módulo 3** | Estructuras de Datos Compuestas: Registros (`record`) | [Práctica 7](./modulo3-practica7.pas) • [Práctica 8](./modulo3-practica8.pas) • [Práctica 11](./modulo3-practica11.pas) |
-| **Módulo 4** | Estructuras de Datos Estáticas: Vectores y Arreglos (`array`) | [Práctica 3](./modulo4-practica3.pas) • [Práctica 7](./modulo4-practica7.pas) • [Práctica 9](./modulo4-practica9.pas) |
-| **Módulo 5** | Procesamiento Complejo, Registros Compuestos y **Corte de Control** | [Práctica 2](./modulo5-practica2.pas) • [Práctica 4](./modulo5-practica4.pas) • [Práctica 5](./modulo5-practica5.pas) |
-| **Módulo 6** | Estructuras de Datos Lineales: Vectores y Arreglos (`array`) | [Práctica 1](./modulo6-practica1.pas) • [Práctica 2](./modulo6-practica2.pas) • [Práctica 3](./modulo6-practica3.pas) • [Práctica 4](./modulo6-practica4.pas) • [Práctica 6](./modulo6-practica6.pas) • [Práctica 7](./modulo6-practica7.pas) • [Práctica 9](./modulo6-practica9.pas) • [Práctica 10](./modulo6-practica10.pas) • [Práctica 12](./modulo6-practica12.pas) • [Práctica 13](./modulo6-practica13.pas) |
+| **Práctica 1** | Fundamentos y Estructuras de Control | Variables, tipos de datos básicos, `if`, `case`, `for`, `while`, `repeat until`, cálculo de máximos y mínimos. |
+| **Práctica 2** | Manejo de Números y Caracteres | Descomposición de números en dígitos, operaciones aritméticas y procesamiento de caracteres. |
+| **Práctica 3** | Modularización y Subprogramas | Procedimientos (`procedure`), Funciones (`function`), alcance de variables y pasaje de parámetros (por valor y por referencia). |
+| **Práctica 4** | Registros (TDDU) | Tipos de Datos Definidos por el Usuario (TDDU) y estructuras de datos compuestas (`record`). |
+| **Práctica 5** | Corte de Control | Procesamiento de datos agrupados, registros compuestos y algoritmos de corte de control. |
+| **Práctica 6** | Vectores y Arreglos (1D) | Estructuras estáticas lineales (`array`), dimensión física y lógica, búsqueda secuencial, búsqueda dicotómica y ordenación. |
+| **Práctica 7** | Matrices (2D) | Estructuras estáticas bidimensionales (`array`), recorridos por filas, columnas y diagonales. |
+| **Práctica 8** | Punteros y Memoria Dinámica | Variables de tipo puntero (`^`), gestión y alocación/desalocación dinámica de memoria (`new` y `dispose`). |
+| **Práctica 9** | Listas Simples y Dobles | Estructuras dinámicas lineales, operaciones de inserción (al inicio, al final, ordenada), borrado y recorrido. |
+| **Práctica 10** | Repaso General e Integración | Integración de estructuras compuestas (vectores de listas, listas de vectores), algoritmos de *Merge* y preparación de parciales. |
 
 ---
 
