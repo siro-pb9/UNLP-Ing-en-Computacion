@@ -11,3 +11,71 @@ d) ¿Cuál es el tamaño de la estructura completa, es decir, cuando se hayan al
 
 program modulo8practica6;
 
+const
+  max_bit = 255;
+  columnas = 480;
+  filas = 640;
+  ini = 1;
+
+type
+  rangoGris = 0..max_bit;
+  rangoColumnas = ini..columnas;
+  rangoFilas = ini..filas;
+
+  fila = array [rangoFilas] of rangoGris;
+
+  ptrFila = ^fila; 
+
+  columna = array [rangoColumnas] of ptrFila;
+
+procedure ingresarFilas(var c: columna);
+  var
+    i, j: integer;
+  begin
+    for i := 1 to 100 do begin
+              new(c[i]);
+      for j := 1 to filas do begin
+        readln(c[i]^[j]);
+      end;
+    end;
+  end;
+
+procedure liberarFilas(var c: columna; cant: integer);
+  var
+    i: integer;
+  begin
+    for i := 1 to cant do begin
+      dispose(c[i]);
+      c[i] := nil;
+    end;
+  end;
+
+{==============================================================================
+ CÁLCULO DE TAMAÑOS DE MEMORIA:
+ ==============================================================================
+ Nota: El tipo rangoGris (0..255) ocupa 1 byte (tipo byte/subrange).
+       Cada puntero ocupa 4 bytes.
+
+ Tipo "fila" = array[1..640] of rangoGris = 640 bytes.
+ Tipo "columna" = array[1..480] of ptrFila = 480 * 4 = 1.920 bytes (estáticos).
+
+ b) Al comenzar el programa:
+    - La variable "c: columna" ocupa 1.920 bytes en la pila.
+    - El Heap está vacío: 0 bytes dinámicos.
+    - Total en uso: 1.920 bytes.
+
+ c) Después de ingresarFilas (100 filas):
+    - 100 punteros apuntan a filas en el Heap: 100 * 640 = 64.000 bytes dinámicos.
+    - Total en uso: 1.920 + 64.000 = 65.920 bytes (~64.4 KB).
+
+ d) Con las 480 filas completas:
+    - 480 * 640 = 307.200 bytes dinámicos.
+    - Total en uso: 1.920 + 307.200 = 309.120 bytes (~301.9 KB).
+ ==============================================================================}
+
+var
+  c: columna;
+begin
+  ingresarFilas(c);
+  liberarFilas(c, 100);
+end.
