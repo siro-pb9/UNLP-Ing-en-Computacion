@@ -3,3 +3,16 @@ desde teclado, lo imprima en pantalla y luego libere la memoria alocada.}
 
 program modulo8practica1;
 
+type
+  ptrEntero = ^integer;
+
+var
+  p: ptrEntero;
+begin
+  new(p);
+  readln(p^);
+  writeln(p^);
+  dispose(p);
+  p := nil;
+  readln;
+end.
