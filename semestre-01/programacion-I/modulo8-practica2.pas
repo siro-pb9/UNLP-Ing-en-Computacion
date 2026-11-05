@@ -107,3 +107,4 @@ begin
   // g) Acceso a memoria liberada (comentado para evitar violación de acceso en runtime)
   // write(c2^.procesador);
 end.
+
